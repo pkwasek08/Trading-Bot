@@ -1,0 +1,16 @@
+version: "3.7"
+services:
+  dbpostgresql:
+    image: postgres:11-alpine
+    container_name: dbpostgresql
+    volumes:
+      - db-java-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=bot
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+    ports:
+      - 5432:5432
+
+volumes:
+  db-java-data:
