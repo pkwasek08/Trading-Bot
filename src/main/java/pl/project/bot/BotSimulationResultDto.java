@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BotSimulationResultDto {
     private String parameters;
+    private String response;
 }
