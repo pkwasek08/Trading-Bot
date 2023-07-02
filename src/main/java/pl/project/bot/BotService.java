@@ -2,9 +2,13 @@ package pl.project.bot;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.project.bot.dto.BotRsiParametersDTO;
+import pl.project.bot.dto.StockDataParametersDTO;
+import pl.project.bot.dto.StockDataResultDto;
 import pl.project.execDetails.ExecDetails;
 import pl.project.execDetails.ExecDetailsHelper;
 
+import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +19,8 @@ public class BotService {
     private BotRepository botRepository;
     @Autowired
     private BotSimulationService botSimulationService;
+    @Autowired
+    private BotRsiService botRsiService;
 
     public List<BotsEntity> getAllBot() {
         List<BotsEntity> bots = new ArrayList<>();
@@ -40,10 +46,19 @@ public class BotService {
         botRepository.deleteById(id);
     }
 
-    public ExecDetailsBot startBot(String parameters) {
+    public ExecDetailsBot startRsiBot(@NotNull BotRsiParametersDTO parameters) {
         ExecDetailsHelper execHelper = new ExecDetailsHelper();
         execHelper.setStartDbTime(OffsetDateTime.now());
-        BotSimulationResultDto result = botSimulationService.startBotSimulation(parameters);
+        StockDataResultDto result = botRsiService.startSimulation(parameters);
+        // TODO save the result to DB
+        execHelper.addNewDbTime();
+        return new ExecDetailsBot(new ExecDetails(execHelper.getExecTime(), execHelper.getDbTime()), result);
+    }
+
+    public ExecDetailsBot getStockData(@NotNull StockDataParametersDTO parameters) {
+        ExecDetailsHelper execHelper = new ExecDetailsHelper();
+        execHelper.setStartDbTime(OffsetDateTime.now());
+        StockDataResultDto result = botSimulationService.getStockData(parameters);
         execHelper.addNewDbTime();
         return new ExecDetailsBot(new ExecDetails(execHelper.getExecTime(), execHelper.getDbTime()), result);
     }

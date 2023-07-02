@@ -11,7 +11,11 @@ import org.ta4j.core.BaseBarSeries;
 import org.ta4j.core.indicators.RSIIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.num.Num;
+import pl.project.bot.dto.BarDTO;
+import pl.project.bot.dto.StockDataParametersDTO;
+import pl.project.bot.dto.StockDataResultDto;
 
+import javax.validation.constraints.NotNull;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
@@ -19,16 +23,19 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class BotSimulationService {
 
-    public BotSimulationResultDto startBotSimulation(String parameters) {
-        BotSimulationResultDto result = new BotSimulationResultDto();
-        //LocalDate startDate = LocalDate.of(2022,1,1);
-        // startDate.minusDays(14);
-        //  LocalDate endDate = LocalDate.of(2022,1,1);
-        String apiUrl = "https://api.tiingo.com/iex/TSLA/prices?columns=open,high,low,close,volume&currency=USD&startDate=2023-01-01&endDate=2023-04-22&resampleFreq=60min&token=9a1345cb50538c0325f67ec8af5f73a2ce829314";
+    public StockDataResultDto getStockData(@NotNull StockDataParametersDTO parameters) {
+        StockDataResultDto result = new StockDataResultDto();
+        result.setParameters(parameters);
+        String apiUrl = "https://api.tiingo.com/iex/" + parameters.getStock() +
+                "/prices?columns=open,high,low,close,volume&currency=USD&startDate="
+                + parameters.getStartDate() + "&endDate=" + parameters.getEndDate() +
+                "&resampleFreq=" + parameters.getResampleFreq() + "&token=9a1345cb50538c0325f67ec8af5f73a2ce829314";
 
         try {
             URL url = new URL(apiUrl);
@@ -38,7 +45,7 @@ public class BotSimulationService {
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(con.getInputStream()));
             String inputLine;
-            StringBuffer content = new StringBuffer();
+            StringBuilder content = new StringBuilder();
             while ((inputLine = in.readLine()) != null) {
                 content.append(inputLine);
             }
@@ -47,27 +54,43 @@ public class BotSimulationService {
 
             JSONArray jsonArray = new JSONArray(content.toString());
             result.setResponse(jsonArray.toString());
-
+            BarSeries barSeries = getBarSeries(jsonArray, 0, jsonArray.length(), null);
+            List<BarDTO> barDataList = new ArrayList<>();
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String dateTime = jsonObject.getString("date");
                 Double price = jsonObject.getDouble("close");
                 double rsi = 0;
+                // RSI is calculated based on 14 previous bars
                 if (i > 13) {
                     rsi = calculateRSI(jsonArray, i - 14, i);
+                    BarDTO singleBarData = new BarDTO();
+                    singleBarData.setBar(barSeries.getBar(i));
+                    singleBarData.setRsi(rsi);
+                    barDataList.add(singleBarData);
                 }
+                // assign new bar with calculated rsi
                 System.out.println("Date/Time: " + dateTime + ", Price: " + price + ", RSI: " + rsi);
             }
+            result.setBarDataList(barDataList);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        result.setParameters(parameters);
         return result;
     }
 
-    public static double calculateRSI(JSONArray array, int indexStart, int indexEnd) throws JSONException {
-        BarSeries series = new BaseBarSeries();
+    private double calculateRSI(JSONArray array, int indexStart, int indexEnd) throws JSONException {
         int period = indexEnd - indexStart;
+        BarSeries series = getBarSeries(array, indexStart, indexEnd, period);
+        ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
+        RSIIndicator rsi = new RSIIndicator(closePrice, period);
+        Num rsiValue = rsi.getValue(series.getEndIndex());
+        return rsiValue.doubleValue();
+    }
+
+    private BarSeries getBarSeries(JSONArray array, int indexStart, int indexEnd, Integer period) throws JSONException {
+        BarSeries series = new BaseBarSeries();
+        Duration duration = period != null ? Duration.ofHours(period) : Duration.ZERO;
         for (int i = indexStart; i < indexEnd; i++) {
             JSONObject jsonObject = array.getJSONObject(i);
             BigDecimal open = BigDecimal.valueOf(jsonObject.getDouble("open"));
@@ -77,13 +100,9 @@ public class BotSimulationService {
             BigDecimal volume = BigDecimal.valueOf(jsonObject.getDouble("volume"));
             String dateTime = jsonObject.getString("date");
             ZonedDateTime endDate = ZonedDateTime.parse(dateTime);
-            Bar bar = new BaseBar(Duration.ofHours(period), endDate, open, high, low, close, volume);
+            final Bar bar = new BaseBar(duration, endDate, open, high, low, close, volume);
             series.addBar(bar);
         }
-
-        ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
-        RSIIndicator rsi = new RSIIndicator(closePrice, period);
-        Num rsiValue = rsi.getValue(series.getEndIndex());
-        return rsiValue.doubleValue();
+        return series;
     }
 }
