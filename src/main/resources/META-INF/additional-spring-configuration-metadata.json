@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "stock.exchange.api.token",
+      "type": "java.lang.String",
+      "description": "Private token to Tiingo API, is needed to download current stock exchange data."
+  }
+] }

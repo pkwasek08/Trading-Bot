@@ -18,7 +18,7 @@ public class BotService {
     @Autowired
     private BotRepository botRepository;
     @Autowired
-    private BotSimulationService botSimulationService;
+    private BotGetStockDataService botGetStockDataService;
     @Autowired
     private BotRsiService botRsiService;
 
@@ -58,7 +58,7 @@ public class BotService {
     public ExecDetailsBot getStockData(@NotNull StockDataParametersDTO parameters) {
         ExecDetailsHelper execHelper = new ExecDetailsHelper();
         execHelper.setStartDbTime(OffsetDateTime.now());
-        StockDataResultDto result = botSimulationService.getStockData(parameters);
+        StockDataResultDto result = botGetStockDataService.getStockData(parameters);
         execHelper.addNewDbTime();
         return new ExecDetailsBot(new ExecDetails(execHelper.getExecTime(), execHelper.getDbTime()), result);
     }

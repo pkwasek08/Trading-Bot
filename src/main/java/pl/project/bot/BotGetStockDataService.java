@@ -3,6 +3,7 @@ package pl.project.bot;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
@@ -27,7 +28,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class BotSimulationService {
+public class BotGetStockDataService {
+
+    @Value("${stock.exchange.api.token}")
+    private String stockExchangeToken;
 
     public StockDataResultDto getStockData(@NotNull StockDataParametersDTO parameters) {
         StockDataResultDto result = new StockDataResultDto();
@@ -35,7 +39,7 @@ public class BotSimulationService {
         String apiUrl = "https://api.tiingo.com/iex/" + parameters.getStock() +
                 "/prices?columns=open,high,low,close,volume&currency=USD&startDate="
                 + parameters.getStartDate() + "&endDate=" + parameters.getEndDate() +
-                "&resampleFreq=" + parameters.getResampleFreq() + "&token=9a1345cb50538c0325f67ec8af5f73a2ce829314";
+                "&resampleFreq=" + parameters.getResampleFreq() + "&token=" + stockExchangeToken;
 
         try {
             URL url = new URL(apiUrl);

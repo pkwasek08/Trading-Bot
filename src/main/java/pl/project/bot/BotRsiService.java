@@ -18,13 +18,13 @@ import java.util.stream.Collectors;
 public class BotRsiService {
 
     @Autowired
-    private BotSimulationService botSimulationService;
+    private BotGetStockDataService botGetStockDataService;
 
     private double newBudget;
 
     public BotRsiSimulationResultDto startSimulation(@NotNull BotRsiParametersDTO parameters) {
         BotRsiSimulationResultDto stockDataResult =
-                new BotRsiSimulationResultDto(botSimulationService.getStockData(parameters), parameters.getBudget());
+                new BotRsiSimulationResultDto(botGetStockDataService.getStockData(parameters), parameters.getBudget());
         List<TradeDTO> tradeList = new ArrayList<>();
         newBudget = parameters.getBudget();
         for (final BarDTO bar : stockDataResult.getBarDataList()) {
