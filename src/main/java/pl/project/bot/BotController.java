@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.project.bot.dto.BotRsiParametersDTO;
 import pl.project.bot.dto.StockDataParametersDTO;
+import pl.project.helper.TradePositionHelper;
 
 import java.util.List;
 
@@ -45,6 +46,9 @@ public class BotController {
     public ResponseEntity<Object> startRsiBot(@RequestBody BotRsiParametersDTO parameters) {
         if (parameters == null || parameters.checkIsNull()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ValidationException - empty parameters");
+        }
+        if (TradePositionHelper.checkSlTpParameters(parameters)) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ValidationException - missing stopLoss or takeProfit param");
         }
         return ResponseEntity.ok(botService.startRsiBot(parameters));
     }

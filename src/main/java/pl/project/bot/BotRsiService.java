@@ -7,6 +7,7 @@ import pl.project.bot.dto.BarDTO;
 import pl.project.bot.dto.BotRsiParametersDTO;
 import pl.project.bot.dto.BotRsiSimulationResultDto;
 import pl.project.bot.dto.TradeDTO;
+import pl.project.helper.TradePositionHelper;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -31,22 +32,39 @@ public class BotRsiService {
             try {
                 final double rsi = bar.getRsi();
                 final double openPrice = bar.getBar().getOpenPrice().doubleValue();
+                final LocalDateTime openDate = bar.getBar().getBeginTime().toLocalDateTime();
                 // buying
                 if (rsi <= parameters.getRsiLowLevel() && newBudget >= openPrice) {
-                    TradeDTO tradeBuy = new TradeDTO(bar.getBar().getOpenPrice().doubleValue(), 1, LocalDateTime.now(), Trade.TradeType.BUY);
-                    findSellPositionAndClose(tradeList, openPrice);
-                    //TODO add stop loss
+                    TradeDTO tradeBuy = new TradeDTO(openPrice,
+                            1,
+                            openDate,
+                            parameters.getStopLoss(),
+                            parameters.getTakeProfit(),
+                            Trade.TradeType.BUY);
+                    if (parameters.getStopLoss() == null && parameters.getTakeProfit() == null) {
+                        findSellPositionAndClose(tradeList, openPrice, openDate);
+                    }
                     tradeList.add(tradeBuy);
                     newBudget += openPrice;
-
                 }
-                //selling
+                // selling
                 if (rsi >= parameters.getRsiHeightLevel() && newBudget >= openPrice) {
-                    TradeDTO tradeSell = new TradeDTO(bar.getBar().getOpenPrice().doubleValue(), 1, LocalDateTime.now(), Trade.TradeType.SELL);
-                    findBuyPositionAndClose(tradeList, openPrice);
-                    //TODO add stop loss
+                    TradeDTO tradeSell = new TradeDTO(openPrice,
+                            1,
+                            openDate,
+                            parameters.getStopLoss(),
+                            parameters.getTakeProfit(),
+                            Trade.TradeType.SELL);
+                    if (parameters.getStopLoss() == null && parameters.getTakeProfit() == null) {
+                        findBuyPositionAndClose(tradeList, openPrice, openDate);
+                    }
                     tradeList.add(tradeSell);
                     newBudget += -openPrice;
+                }
+
+                if (parameters.getStopLoss() != null && parameters.getTakeProfit() != null) {
+                    findSellPositionSlOrTpToClose(tradeList, openPrice, openDate);
+                    findBuyPositionSlOrTpToClose(tradeList, openPrice, openDate);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -57,27 +75,55 @@ public class BotRsiService {
         return stockDataResult;
     }
 
-    private void findSellPositionAndClose(@NotNull List<TradeDTO> tradeList, double currentPrice) {
+    private void findSellPositionAndClose(@NotNull final List<TradeDTO> tradeList, final double currentPrice, final LocalDateTime date) {
         tradeList.stream()
                 .filter(trade -> trade.getType() == Trade.TradeType.SELL && trade.getProfitLose() == null)
                 .findFirst()
                 .ifPresent(trade -> {
                     trade.setProfitLose(trade.getOpenPrice() - currentPrice);
                     trade.setClosePrice(currentPrice);
-                    trade.setDateClose(LocalDateTime.now());
+                    trade.setDateClose(date);
                     newBudget += trade.getOpenPrice() - currentPrice;
                 });
     }
 
-    private void findBuyPositionAndClose(@NotNull List<TradeDTO> tradeList, double currentPrice) {
+    private void findBuyPositionAndClose(@NotNull final List<TradeDTO> tradeList, final double currentPrice, final LocalDateTime date) {
         tradeList.stream()
                 .filter(trade -> trade.getType() == Trade.TradeType.BUY && trade.getProfitLose() == null)
                 .findFirst()
                 .ifPresent(trade -> {
                     trade.setProfitLose(currentPrice - trade.getOpenPrice());
                     trade.setClosePrice(currentPrice);
-                    trade.setDateClose(LocalDateTime.now());
+                    trade.setDateClose(date);
                     newBudget += currentPrice - trade.getOpenPrice();
+                });
+    }
+
+    private void findSellPositionSlOrTpToClose(@NotNull final List<TradeDTO> tradeList, final double currentPrice, final LocalDateTime date) {
+        tradeList.stream()
+                .filter(trade -> trade.getType().equals(Trade.TradeType.SELL) && trade.getProfitLose() == null &&
+                        TradePositionHelper.checkSlAndTpForSellPosition(trade, currentPrice))
+                .findFirst()
+                .ifPresent(trade -> {
+                    trade.setProfitLose(trade.getOpenPrice() - currentPrice);
+                    trade.setClosePrice(currentPrice);
+                    trade.setDateClose(date);
+                    newBudget += trade.getOpenPrice() - currentPrice;
+                    trade.setComment("The position has been closed because of SL or TP");
+                });
+    }
+
+    private void findBuyPositionSlOrTpToClose(@NotNull final List<TradeDTO> tradeList, final double currentPrice, final LocalDateTime date) {
+        tradeList.stream()
+                .filter(trade -> trade.getType().equals(Trade.TradeType.BUY) && trade.getProfitLose() == null &&
+                        TradePositionHelper.checkSlAndTpForBuyPosition(trade, currentPrice))
+                .findFirst()
+                .ifPresent(trade -> {
+                    trade.setProfitLose(currentPrice - trade.getOpenPrice());
+                    trade.setClosePrice(currentPrice);
+                    trade.setDateClose(date);
+                    newBudget += currentPrice - trade.getOpenPrice();
+                    trade.setComment("The position has been closed because of SL or TP");
                 });
     }
 

@@ -12,5 +12,7 @@ public class BotRsiParametersDTO extends StockDataParametersDTO {
     private Double rsiHeightLevel;
     private Double rsiLowLevel;
     private Double budget;
+    private Double stopLoss;
+    private Double takeProfit;
     //private StrategyEnum strategy;
 }
