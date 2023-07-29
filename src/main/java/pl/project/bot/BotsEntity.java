@@ -1,8 +1,11 @@
 package pl.project.bot;
 
+import pl.project.trade.TradesEntity;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 @Entity
 @Table(name = "bots", schema = "public", catalog = "bot")
@@ -14,7 +17,10 @@ public class BotsEntity {
     private BigDecimal resultValue;
     private BigDecimal budget;
     private String status;
+    private String strategy;
     private String parameters;
+    private Timestamp createDate;
+    private Collection<TradesEntity> tradesById;
 
     @Id
     @Column(name = "id", nullable = false)
@@ -27,7 +33,7 @@ public class BotsEntity {
     }
 
     @Basic
-    @Column(name = "name", nullable = true, length = -1)
+    @Column(name = "name", length = -1)
     public String getName() {
         return name;
     }
@@ -37,7 +43,7 @@ public class BotsEntity {
     }
 
     @Basic
-    @Column(name = "start_date", nullable = true)
+    @Column(name = "start_date")
     public Timestamp getStartDate() {
         return startDate;
     }
@@ -47,7 +53,7 @@ public class BotsEntity {
     }
 
     @Basic
-    @Column(name = "end_date", nullable = true)
+    @Column(name = "end_date")
     public Timestamp getEndDate() {
         return endDate;
     }
@@ -57,7 +63,7 @@ public class BotsEntity {
     }
 
     @Basic
-    @Column(name = "result_value", nullable = true, precision = 2)
+    @Column(name = "result_value", precision = 2)
     public BigDecimal getResultValue() {
         return resultValue;
     }
@@ -67,7 +73,7 @@ public class BotsEntity {
     }
 
     @Basic
-    @Column(name = "budget", nullable = true, precision = 2)
+    @Column(name = "budget", precision = 2)
     public BigDecimal getBudget() {
         return budget;
     }
@@ -77,7 +83,7 @@ public class BotsEntity {
     }
 
     @Basic
-    @Column(name = "status", nullable = true, length = -1)
+    @Column(name = "status", length = -1)
     public String getStatus() {
         return status;
     }
@@ -87,13 +93,33 @@ public class BotsEntity {
     }
 
     @Basic
-    @Column(name = "parameters", nullable = true, length = -1)
+    @Column(name = "strategy", length = -1)
+    public String getStrategy() {
+        return strategy;
+    }
+
+    public void setStrategy(String strategy) {
+        this.strategy = strategy;
+    }
+
+    @Basic
+    @Column(name = "parameters", length = -1)
     public String getParameters() {
         return parameters;
     }
 
     public void setParameters(String parameters) {
         this.parameters = parameters;
+    }
+
+    @Basic
+    @Column(name = "create_date")
+    public Timestamp getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Timestamp createDate) {
+        this.createDate = createDate;
     }
 
     @Override
@@ -110,7 +136,9 @@ public class BotsEntity {
         if (resultValue != null ? !resultValue.equals(that.resultValue) : that.resultValue != null) return false;
         if (budget != null ? !budget.equals(that.budget) : that.budget != null) return false;
         if (status != null ? !status.equals(that.status) : that.status != null) return false;
+        if (strategy != null ? !strategy.equals(that.strategy) : that.strategy != null) return false;
         if (parameters != null ? !parameters.equals(that.parameters) : that.parameters != null) return false;
+        if (createDate != null ? !createDate.equals(that.createDate) : that.createDate != null) return false;
 
         return true;
     }
@@ -124,7 +152,18 @@ public class BotsEntity {
         result = 31 * result + (resultValue != null ? resultValue.hashCode() : 0);
         result = 31 * result + (budget != null ? budget.hashCode() : 0);
         result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + (strategy != null ? strategy.hashCode() : 0);
         result = 31 * result + (parameters != null ? parameters.hashCode() : 0);
+        result = 31 * result + (createDate != null ? createDate.hashCode() : 0);
         return result;
+    }
+
+    @OneToMany(mappedBy = "bot")
+    public Collection<TradesEntity> getTradesById() {
+        return tradesById;
+    }
+
+    public void setTradesById(Collection<TradesEntity> tradesById) {
+        this.tradesById = tradesById;
     }
 }
