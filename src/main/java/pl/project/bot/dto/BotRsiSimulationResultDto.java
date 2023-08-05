@@ -3,9 +3,8 @@ package pl.project.bot.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.project.bot.dto.StockDataResultDto;
-import pl.project.bot.dto.TradeDTO;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,11 +12,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BotRsiSimulationResultDto extends StockDataResultDto {
-    private Double budgetBefore;
-    private Double budgetAfter;
+    private BigDecimal budgetBefore;
+    private BigDecimal budgetAfter;
     private List<TradeDTO> tradeList = new ArrayList<>();
 
-    public BotRsiSimulationResultDto(StockDataResultDto stockDataResult, Double budgetBefore) {
+    public BotRsiSimulationResultDto(StockDataResultDto stockDataResult, BigDecimal budgetBefore) {
         super(stockDataResult.getParameters(), stockDataResult.getResponse(), stockDataResult.getBarDataList());
         this.budgetBefore = budgetBefore;
     }

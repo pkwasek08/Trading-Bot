@@ -3,10 +3,12 @@ package pl.project.bot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.project.bot.dto.BotRsiParametersDTO;
+import pl.project.bot.dto.BotRsiSimulationResultDto;
 import pl.project.bot.dto.StockDataParametersDTO;
 import pl.project.bot.dto.StockDataResultDto;
-import pl.project.execDetails.ExecDetails;
-import pl.project.execDetails.ExecDetailsHelper;
+import pl.project.bot.mapper.BotRsiMapper;
+import pl.project.common.execDetails.ExecDetails;
+import pl.project.common.execDetails.ExecDetailsHelper;
 
 import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
@@ -21,6 +23,8 @@ public class BotService {
     private BotGetStockDataService botGetStockDataService;
     @Autowired
     private BotRsiService botRsiService;
+    @Autowired
+    private BotRsiMapper botRsiMapper;
 
     public List<BotsEntity> getAllBot() {
         List<BotsEntity> bots = new ArrayList<>();
@@ -49,8 +53,8 @@ public class BotService {
     public ExecDetailsBot startRsiBot(@NotNull BotRsiParametersDTO parameters) {
         ExecDetailsHelper execHelper = new ExecDetailsHelper();
         execHelper.setStartDbTime(OffsetDateTime.now());
-        StockDataResultDto result = botRsiService.startSimulation(parameters);
-        // TODO save the result to DB
+        final BotRsiSimulationResultDto result = botRsiService.startSimulation(parameters);
+        botRepository.save(botRsiMapper.rsiSimulationResultToBotEntity(result, parameters, execHelper.getStartExecTime().toLocalDateTime()));
         execHelper.addNewDbTime();
         return new ExecDetailsBot(new ExecDetails(execHelper.getExecTime(), execHelper.getDbTime()), result);
     }

@@ -10,6 +10,8 @@ CREATE TABLE "bots"
     "status"       varchar,
     "strategy"     varchar,
     "parameters"   varchar,
+    "pair_stock" varchar,
+    "resample_frequency" varchar,
     "create_date"  timestamp
 );
 
@@ -28,7 +30,6 @@ CREATE TABLE "trades"
     "id"         SERIAL PRIMARY KEY,
     "bot_id"     integer,
     "type"       varchar,
-    "pair_stock" varchar,
     "open_price"    numeric(16, 2),
     "date_open"       timestamp,
     "date_close"       timestamp,

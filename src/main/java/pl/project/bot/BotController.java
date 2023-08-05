@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.project.bot.dto.BotRsiParametersDTO;
 import pl.project.bot.dto.StockDataParametersDTO;
-import pl.project.helper.TradePositionHelper;
+import pl.project.common.helper.TradePositionHelper;
 
 import java.util.List;
 

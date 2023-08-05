@@ -4,17 +4,16 @@ import pl.project.bot.BotsEntity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "trades", schema = "public", catalog = "bot")
 public class TradesEntity {
     private int id;
     private String type;
-    private String pairStock;
     private BigDecimal openPrice;
-    private Timestamp dateOpen;
-    private Timestamp dateClose;
+    private LocalDateTime dateOpen;
+    private LocalDateTime dateClose;
     private BigDecimal balanceBefore;
     private BigDecimal balanceAfter;
     private BigDecimal stopLoss;
@@ -23,6 +22,7 @@ public class TradesEntity {
     private BotsEntity bot;
 
     @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     public int getId() {
         return id;
@@ -43,16 +43,6 @@ public class TradesEntity {
     }
 
     @Basic
-    @Column(name = "pair_stock", length = -1)
-    public String getPairStock() {
-        return pairStock;
-    }
-
-    public void setPairStock(String pairStock) {
-        this.pairStock = pairStock;
-    }
-
-    @Basic
     @Column(name = "open_price", precision = 2)
     public BigDecimal getOpenPrice() {
         return openPrice;
@@ -64,21 +54,21 @@ public class TradesEntity {
 
     @Basic
     @Column(name = "date_open")
-    public Timestamp getDateOpen() {
+    public LocalDateTime getDateOpen() {
         return dateOpen;
     }
 
-    public void setDateOpen(Timestamp dateOpen) {
+    public void setDateOpen(LocalDateTime dateOpen) {
         this.dateOpen = dateOpen;
     }
 
     @Basic
     @Column(name = "date_close")
-    public Timestamp getDateClose() {
+    public LocalDateTime getDateClose() {
         return dateClose;
     }
 
-    public void setDateClose(Timestamp dateClose) {
+    public void setDateClose(LocalDateTime dateClose) {
         this.dateClose = dateClose;
     }
 
@@ -141,7 +131,6 @@ public class TradesEntity {
 
         if (id != that.id) return false;
         if (type != null ? !type.equals(that.type) : that.type != null) return false;
-        if (pairStock != null ? !pairStock.equals(that.pairStock) : that.pairStock != null) return false;
         if (openPrice != null ? !openPrice.equals(that.openPrice) : that.openPrice != null) return false;
         if (dateOpen != null ? !dateOpen.equals(that.dateOpen) : that.dateOpen != null) return false;
         if (dateClose != null ? !dateClose.equals(that.dateClose) : that.dateClose != null) return false;
@@ -159,7 +148,6 @@ public class TradesEntity {
     public int hashCode() {
         int result = id;
         result = 31 * result + (type != null ? type.hashCode() : 0);
-        result = 31 * result + (pairStock != null ? pairStock.hashCode() : 0);
         result = 31 * result + (openPrice != null ? openPrice.hashCode() : 0);
         result = 31 * result + (dateOpen != null ? dateOpen.hashCode() : 0);
         result = 31 * result + (dateClose != null ? dateClose.hashCode() : 0);

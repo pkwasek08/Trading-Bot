@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import pl.project.bot.dto.StockDataResultDto;
-import pl.project.execDetails.ExecDetails;
+import pl.project.common.execDetails.ExecDetails;
 
 @Data
 @NoArgsConstructor

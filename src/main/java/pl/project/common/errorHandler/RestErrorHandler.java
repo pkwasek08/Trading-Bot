@@ -1,4 +1,4 @@
-package pl.project.errorHandler;
+package pl.project.common.errorHandler;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;

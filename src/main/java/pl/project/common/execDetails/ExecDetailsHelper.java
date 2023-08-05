@@ -1,4 +1,4 @@
-package pl.project.execDetails;
+package pl.project.common.execDetails;
 
 import lombok.Data;
 import org.springframework.stereotype.Component;

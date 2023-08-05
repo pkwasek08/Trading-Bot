@@ -4,15 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class BotRsiParametersDTO extends StockDataParametersDTO {
-    private Double rsiHeightLevel;
-    private Double rsiLowLevel;
-    private Double budget;
-    private Double stopLoss;
-    private Double takeProfit;
+    private String name;
+    private BigDecimal rsiHeightLevel;
+    private BigDecimal rsiLowLevel;
+    private BigDecimal budget;
+    private BigDecimal stopLoss;
+    private BigDecimal takeProfit;
     //private StrategyEnum strategy;
 }

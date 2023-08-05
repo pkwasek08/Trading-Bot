@@ -4,7 +4,7 @@ import pl.project.trade.TradesEntity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Entity
@@ -12,17 +12,20 @@ import java.util.Collection;
 public class BotsEntity {
     private int id;
     private String name;
-    private Timestamp startDate;
-    private Timestamp endDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private BigDecimal resultValue;
     private BigDecimal budget;
     private String status;
     private String strategy;
     private String parameters;
-    private Timestamp createDate;
+    private LocalDateTime createDate;
+    private String pairStock;
+    private String resampleFreq;
     private Collection<TradesEntity> tradesById;
 
     @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     public int getId() {
         return id;
@@ -44,21 +47,21 @@ public class BotsEntity {
 
     @Basic
     @Column(name = "start_date")
-    public Timestamp getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Timestamp startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
     @Basic
     @Column(name = "end_date")
-    public Timestamp getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Timestamp endDate) {
+    public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
 
@@ -114,12 +117,33 @@ public class BotsEntity {
 
     @Basic
     @Column(name = "create_date")
-    public Timestamp getCreateDate() {
+    public LocalDateTime getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Timestamp createDate) {
+    public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
+    }
+
+    @Basic
+    @Column(name = "pair_stock", length = -1)
+    public String getPairStock() {
+        return pairStock;
+    }
+
+    public void setPairStock(String pairStock) {
+        this.pairStock = pairStock;
+    }
+
+
+    @Basic
+    @Column(name = "resample_frequency", length = -1)
+    public String getResampleFreq() {
+        return resampleFreq;
+    }
+
+    public void setResampleFreq(String resampleFreq) {
+        this.resampleFreq = resampleFreq;
     }
 
     @Override
@@ -139,6 +163,8 @@ public class BotsEntity {
         if (strategy != null ? !strategy.equals(that.strategy) : that.strategy != null) return false;
         if (parameters != null ? !parameters.equals(that.parameters) : that.parameters != null) return false;
         if (createDate != null ? !createDate.equals(that.createDate) : that.createDate != null) return false;
+        if (pairStock != null ? !pairStock.equals(that.pairStock) : that.pairStock != null) return false;
+        if (resampleFreq != null ? !resampleFreq.equals(that.resampleFreq) : that.resampleFreq != null) return false;
 
         return true;
     }
@@ -155,6 +181,8 @@ public class BotsEntity {
         result = 31 * result + (strategy != null ? strategy.hashCode() : 0);
         result = 31 * result + (parameters != null ? parameters.hashCode() : 0);
         result = 31 * result + (createDate != null ? createDate.hashCode() : 0);
+        result = 31 * result + (pairStock != null ? pairStock.hashCode() : 0);
+        result = 31 * result + (resampleFreq != null ? resampleFreq.hashCode() : 0);
         return result;
     }
 
