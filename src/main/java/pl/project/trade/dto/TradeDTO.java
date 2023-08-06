@@ -1,4 +1,4 @@
-package pl.project.bot.dto;
+package pl.project.trade.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

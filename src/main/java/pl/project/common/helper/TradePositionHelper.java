@@ -1,7 +1,7 @@
 package pl.project.common.helper;
 
 import pl.project.bot.dto.BotRsiParametersDTO;
-import pl.project.bot.dto.TradeDTO;
+import pl.project.trade.dto.TradeDTO;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;

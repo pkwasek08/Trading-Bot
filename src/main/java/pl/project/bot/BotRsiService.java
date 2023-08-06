@@ -6,7 +6,7 @@ import org.ta4j.core.Trade;
 import pl.project.bot.dto.BarDTO;
 import pl.project.bot.dto.BotRsiParametersDTO;
 import pl.project.bot.dto.BotRsiSimulationResultDto;
-import pl.project.bot.dto.TradeDTO;
+import pl.project.trade.dto.TradeDTO;
 import pl.project.common.helper.TradePositionHelper;
 
 import javax.validation.constraints.NotNull;

@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 import pl.project.bot.BotsEntity;
-import pl.project.bot.dto.TradeDTO;
+import pl.project.trade.dto.TradeDTO;
 import pl.project.trade.TradesEntity;
 
 import javax.validation.constraints.NotNull;
@@ -19,4 +19,6 @@ public interface TradeMapper {
             @Mapping(source = "bot", target = "bot")
     })
     TradesEntity rsiSimulationResultToTradeEntity(@NotNull TradeDTO trade, @NotNull BotsEntity bot);
+
+    TradeDTO tradeEntityToTradeDto(@NotNull TradesEntity trade);
 }

@@ -1,15 +1,16 @@
 package pl.project.bot.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import pl.project.trade.dto.TradeDTO;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class BotRsiSimulationResultDto extends StockDataResultDto {
     private BigDecimal budgetBefore;

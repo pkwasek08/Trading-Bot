@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.project.bot.dto.BotDTO;
 import pl.project.bot.dto.BotRsiParametersDTO;
 import pl.project.bot.dto.StockDataParametersDTO;
 import pl.project.common.helper.TradePositionHelper;
@@ -18,13 +19,8 @@ public class BotController {
     private BotService botService;
 
     @GetMapping()
-    public List<BotsEntity> getAllBot() {
-        return botService.getAllBot();
-    }
-
-    @GetMapping("/{id}")
-    public BotsEntity getBot(@PathVariable Integer id) {
-        return botService.getBot(id);
+    public List<BotDTO> getAllBot() {
+        return botService.getAllBotDetails();
     }
 
     @PostMapping()

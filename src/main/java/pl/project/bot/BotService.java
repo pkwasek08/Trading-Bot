@@ -2,19 +2,17 @@ package pl.project.bot;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.project.bot.dto.BotRsiParametersDTO;
-import pl.project.bot.dto.BotRsiSimulationResultDto;
-import pl.project.bot.dto.StockDataParametersDTO;
-import pl.project.bot.dto.StockDataResultDto;
+import pl.project.bot.dto.*;
+import pl.project.bot.mapper.BotMapper;
 import pl.project.bot.mapper.BotRsiMapper;
 import pl.project.common.execDetails.ExecDetails;
 import pl.project.common.execDetails.ExecDetailsHelper;
-import pl.project.trade.TradeService;
 
 import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BotService {
@@ -26,17 +24,13 @@ public class BotService {
     private BotRsiService botRsiService;
     @Autowired
     private BotRsiMapper botRsiMapper;
-    @Autowired
-    private TradeService tradeService;
 
-    public List<BotsEntity> getAllBot() {
+    public List<BotDTO> getAllBotDetails() {
         List<BotsEntity> bots = new ArrayList<>();
         botRepository.findAll().forEach(bots::add);
-        return bots;
-    }
-
-    public BotsEntity getBot(Integer id) {
-        return botRepository.findById(id).get();
+        return bots.stream()
+                .map(BotMapper.INSTANCE::botEntityToBotDto)
+                .collect(Collectors.toList());
     }
 
     public void addBot(BotsEntity bot) {
