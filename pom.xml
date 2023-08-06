@@ -85,11 +85,6 @@
             <artifactId>flyway-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.4.196</version>
-        </dependency>
-        <dependency>
             <groupId>org.ta4j</groupId>
             <artifactId>ta4j-core</artifactId>
             <version>0.15</version>
