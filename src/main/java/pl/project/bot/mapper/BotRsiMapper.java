@@ -7,9 +7,11 @@ import pl.project.bot.BotsEntity;
 import pl.project.bot.dto.BotRsiParametersDTO;
 import pl.project.bot.dto.BotRsiSimulationResultDto;
 import pl.project.common.enums.StrategyEnum;
+import pl.project.trade.mapper.TradeMapper;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @Component
 public class BotRsiMapper {
@@ -34,6 +36,12 @@ public class BotRsiMapper {
         } catch (JsonProcessingException e) {
             newBot.setParameters(null);
         }
+
+        newBot.setTradesById(rsiSimulationResult.getTradeList()
+                .stream()
+                .map(trade -> TradeMapper.INSTANCE.rsiSimulationResultToTradeEntity(trade, newBot))
+                .collect(Collectors.toList()));
+
         return newBot;
     }
 }

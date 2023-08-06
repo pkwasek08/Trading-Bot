@@ -5,30 +5,31 @@ import pl.project.bot.BotsEntity;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "trades", schema = "public", catalog = "bot")
 public class TradesEntity {
-    private int id;
+    private Long id;
     private String type;
     private BigDecimal openPrice;
+    private BigDecimal closePrice;
     private LocalDateTime dateOpen;
     private LocalDateTime dateClose;
-    private BigDecimal balanceBefore;
-    private BigDecimal balanceAfter;
+    private BigDecimal profitLose;
     private BigDecimal stopLoss;
     private BigDecimal takeProfit;
     private String comment;
     private BotsEntity bot;
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -53,6 +54,16 @@ public class TradesEntity {
     }
 
     @Basic
+    @Column(name = "close_price", precision = 2)
+    public BigDecimal getClosePrice() {
+        return closePrice;
+    }
+
+    public void setClosePrice(BigDecimal closePrice) {
+        this.closePrice = closePrice;
+    }
+
+    @Basic
     @Column(name = "date_open")
     public LocalDateTime getDateOpen() {
         return dateOpen;
@@ -73,23 +84,13 @@ public class TradesEntity {
     }
 
     @Basic
-    @Column(name = "balance_before", precision = 2)
-    public BigDecimal getBalanceBefore() {
-        return balanceBefore;
+    @Column(name = "profit_lose", precision = 2)
+    public BigDecimal getProfitLose() {
+        return profitLose;
     }
 
-    public void setBalanceBefore(BigDecimal balanceBefore) {
-        this.balanceBefore = balanceBefore;
-    }
-
-    @Basic
-    @Column(name = "balance_after", precision = 2)
-    public BigDecimal getBalanceAfter() {
-        return balanceAfter;
-    }
-
-    public void setBalanceAfter(BigDecimal balanceAfter) {
-        this.balanceAfter = balanceAfter;
+    public void setProfitLose(BigDecimal balanceBefore) {
+        this.profitLose = balanceBefore;
     }
 
     @Basic
@@ -129,38 +130,37 @@ public class TradesEntity {
 
         TradesEntity that = (TradesEntity) o;
 
-        if (id != that.id) return false;
-        if (type != null ? !type.equals(that.type) : that.type != null) return false;
-        if (openPrice != null ? !openPrice.equals(that.openPrice) : that.openPrice != null) return false;
-        if (dateOpen != null ? !dateOpen.equals(that.dateOpen) : that.dateOpen != null) return false;
-        if (dateClose != null ? !dateClose.equals(that.dateClose) : that.dateClose != null) return false;
-        if (balanceBefore != null ? !balanceBefore.equals(that.balanceBefore) : that.balanceBefore != null)
-            return false;
-        if (balanceAfter != null ? !balanceAfter.equals(that.balanceAfter) : that.balanceAfter != null) return false;
-        if (stopLoss != null ? !stopLoss.equals(that.stopLoss) : that.stopLoss != null) return false;
-        if (takeProfit != null ? !takeProfit.equals(that.takeProfit) : that.takeProfit != null) return false;
-        if (comment != null ? !comment.equals(that.comment) : that.comment != null) return false;
-
-        return true;
+        if (!Objects.equals(id, that.id)) return false;
+        if (!Objects.equals(type, that.type)) return false;
+        if (!Objects.equals(openPrice, that.openPrice)) return false;
+        if (!Objects.equals(closePrice, that.closePrice)) return false;
+        if (!Objects.equals(dateOpen, that.dateOpen)) return false;
+        if (!Objects.equals(dateClose, that.dateClose)) return false;
+        if (!Objects.equals(profitLose, that.profitLose)) return false;
+        if (!Objects.equals(stopLoss, that.stopLoss)) return false;
+        if (!Objects.equals(takeProfit, that.takeProfit)) return false;
+        if (!Objects.equals(comment, that.comment)) return false;
+        return Objects.equals(bot, that.bot);
     }
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (type != null ? type.hashCode() : 0);
         result = 31 * result + (openPrice != null ? openPrice.hashCode() : 0);
+        result = 31 * result + (closePrice != null ? closePrice.hashCode() : 0);
         result = 31 * result + (dateOpen != null ? dateOpen.hashCode() : 0);
         result = 31 * result + (dateClose != null ? dateClose.hashCode() : 0);
-        result = 31 * result + (balanceBefore != null ? balanceBefore.hashCode() : 0);
-        result = 31 * result + (balanceAfter != null ? balanceAfter.hashCode() : 0);
+        result = 31 * result + (profitLose != null ? profitLose.hashCode() : 0);
         result = 31 * result + (stopLoss != null ? stopLoss.hashCode() : 0);
         result = 31 * result + (takeProfit != null ? takeProfit.hashCode() : 0);
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        result = 31 * result + (bot != null ? bot.hashCode() : 0);
         return result;
     }
 
     @ManyToOne
-    @JoinColumn(name = "bot_id", referencedColumnName = "id")
+    @JoinColumn(name = "bot_id", referencedColumnName = "id", nullable = false)
     public BotsEntity getBot() {
         return bot;
     }

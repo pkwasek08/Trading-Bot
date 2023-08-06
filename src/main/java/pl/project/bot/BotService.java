@@ -9,6 +9,7 @@ import pl.project.bot.dto.StockDataResultDto;
 import pl.project.bot.mapper.BotRsiMapper;
 import pl.project.common.execDetails.ExecDetails;
 import pl.project.common.execDetails.ExecDetailsHelper;
+import pl.project.trade.TradeService;
 
 import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
@@ -25,6 +26,8 @@ public class BotService {
     private BotRsiService botRsiService;
     @Autowired
     private BotRsiMapper botRsiMapper;
+    @Autowired
+    private TradeService tradeService;
 
     public List<BotsEntity> getAllBot() {
         List<BotsEntity> bots = new ArrayList<>();

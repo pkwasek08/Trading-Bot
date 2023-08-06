@@ -6,11 +6,12 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Objects;
 
 @Entity
 @Table(name = "bots", schema = "public", catalog = "bot")
 public class BotsEntity {
-    private int id;
+    private Long id;
     private String name;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
@@ -25,13 +26,13 @@ public class BotsEntity {
     private Collection<TradesEntity> tradesById;
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -153,25 +154,24 @@ public class BotsEntity {
 
         BotsEntity that = (BotsEntity) o;
 
-        if (id != that.id) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (startDate != null ? !startDate.equals(that.startDate) : that.startDate != null) return false;
-        if (endDate != null ? !endDate.equals(that.endDate) : that.endDate != null) return false;
-        if (resultValue != null ? !resultValue.equals(that.resultValue) : that.resultValue != null) return false;
-        if (budget != null ? !budget.equals(that.budget) : that.budget != null) return false;
-        if (status != null ? !status.equals(that.status) : that.status != null) return false;
-        if (strategy != null ? !strategy.equals(that.strategy) : that.strategy != null) return false;
-        if (parameters != null ? !parameters.equals(that.parameters) : that.parameters != null) return false;
-        if (createDate != null ? !createDate.equals(that.createDate) : that.createDate != null) return false;
-        if (pairStock != null ? !pairStock.equals(that.pairStock) : that.pairStock != null) return false;
-        if (resampleFreq != null ? !resampleFreq.equals(that.resampleFreq) : that.resampleFreq != null) return false;
-
-        return true;
+        if (!Objects.equals(id, that.id)) return false;
+        if (!Objects.equals(name, that.name)) return false;
+        if (!Objects.equals(startDate, that.startDate)) return false;
+        if (!Objects.equals(endDate, that.endDate)) return false;
+        if (!Objects.equals(resultValue, that.resultValue)) return false;
+        if (!Objects.equals(budget, that.budget)) return false;
+        if (!Objects.equals(status, that.status)) return false;
+        if (!Objects.equals(strategy, that.strategy)) return false;
+        if (!Objects.equals(parameters, that.parameters)) return false;
+        if (!Objects.equals(createDate, that.createDate)) return false;
+        if (!Objects.equals(pairStock, that.pairStock)) return false;
+        if (!Objects.equals(resampleFreq, that.resampleFreq)) return false;
+        return Objects.equals(tradesById, that.tradesById);
     }
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (startDate != null ? startDate.hashCode() : 0);
         result = 31 * result + (endDate != null ? endDate.hashCode() : 0);
@@ -183,10 +183,11 @@ public class BotsEntity {
         result = 31 * result + (createDate != null ? createDate.hashCode() : 0);
         result = 31 * result + (pairStock != null ? pairStock.hashCode() : 0);
         result = 31 * result + (resampleFreq != null ? resampleFreq.hashCode() : 0);
+        result = 31 * result + (tradesById != null ? tradesById.hashCode() : 0);
         return result;
     }
 
-    @OneToMany(mappedBy = "bot")
+    @OneToMany(mappedBy = "bot", cascade = CascadeType.ALL)
     public Collection<TradesEntity> getTradesById() {
         return tradesById;
     }
