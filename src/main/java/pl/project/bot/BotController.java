@@ -38,7 +38,7 @@ public class BotController {
         botService.deleteBot(id);
     }
 
-    @GetMapping(value = "/startRsiBot")
+    @PostMapping(value = "/startRsiBot")
     public ResponseEntity<Object> startRsiBot(@RequestBody BotRsiParametersDTO parameters) {
         if (parameters == null || parameters.checkIsNull()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ValidationException - empty parameters");
