@@ -33,9 +33,9 @@ public class BotController {
         botService.updateBot(bot);
     }
 
-    @DeleteMapping(value = "/{id}")
-    public void deleteBot(@PathVariable Integer id) {
-        botService.deleteBot(id);
+    @DeleteMapping()
+    public boolean deleteBot(@RequestBody Long id) {
+       return botService.deleteBot(id);
     }
 
     @PostMapping(value = "/startRsiBot")

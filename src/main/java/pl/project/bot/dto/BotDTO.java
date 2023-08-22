@@ -11,6 +11,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class BotDTO {
+    private Long Id;
     private String name;
     private LocalDateTime startDate;
     private LocalDateTime endDate;

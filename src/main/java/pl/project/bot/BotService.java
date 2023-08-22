@@ -2,6 +2,7 @@ package pl.project.bot;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.project.bot.dto.*;
 import pl.project.bot.mapper.BotMapper;
 import pl.project.bot.mapper.BotRsiMapper;
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,8 +45,10 @@ public class BotService {
     }
 
 
-    public void deleteBot(Integer id) {
-        botRepository.deleteById(id);
+    @Transactional
+    public boolean deleteBot(Long id) {
+        Optional<BotsEntity> result = botRepository.deleteBotsEntityById(id);
+        return result.isPresent();
     }
 
     public ExecDetailsBot startRsiBot(@NotNull BotRsiParametersDTO parameters) {
