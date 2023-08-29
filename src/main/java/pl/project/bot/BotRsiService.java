@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.ta4j.core.Trade.TradeType.BUY;
+
 @Service
 public class BotRsiService {
 
@@ -35,23 +37,22 @@ public class BotRsiService {
                 final BigDecimal openPrice = BigDecimal.valueOf(bar.getBar().getOpenPrice().doubleValue());
                 final LocalDateTime openDate = bar.getBar().getBeginTime().toLocalDateTime();
                 // buying
-                if (rsi.compareTo(parameters.getRsiLowLevel()) <= 0) {
+                if (rsi.compareTo(parameters.getRsiLowLevel()) <= 0 && bar.getBar().isBullish()) {
                     TradeDTO tradeBuy = new TradeDTO(openPrice,
-                            1,
+                            parameters.getAmount(),
                             openDate,
                             parameters.getStopLoss(),
                             parameters.getTakeProfit(),
-                            Trade.TradeType.BUY);
+                            BUY);
                     if (parameters.getStopLoss() == null && parameters.getTakeProfit() == null) {
                         findSellPositionAndClose(tradeList, openPrice, openDate);
                     }
                     addNewTrade(tradeList, tradeBuy);
-                    newBudget = newBudget.add(openPrice);
                 }
                 // selling
-                if (rsi.compareTo(parameters.getRsiHeightLevel()) >= 0) {
+                if (rsi.compareTo(parameters.getRsiHeightLevel()) >= 0 && bar.getBar().isBearish()) {
                     TradeDTO tradeSell = new TradeDTO(openPrice,
-                            1,
+                            parameters.getAmount(),
                             openDate,
                             parameters.getStopLoss(),
                             parameters.getTakeProfit(),
@@ -60,7 +61,6 @@ public class BotRsiService {
                         findBuyPositionAndClose(tradeList, openPrice, openDate);
                     }
                     addNewTrade(tradeList, tradeSell);
-                    newBudget = newBudget.subtract(openPrice);
                 }
 
                 if (parameters.getStopLoss() != null && parameters.getTakeProfit() != null) {
@@ -81,22 +81,28 @@ public class BotRsiService {
                 .filter(trade -> trade.getType() == Trade.TradeType.SELL && trade.getProfitLose() == null)
                 .findFirst()
                 .ifPresent(trade -> {
-                    trade.setProfitLose(trade.getOpenPrice().subtract(currentPrice));
+                    final BigDecimal profitLose = trade.getOpenPrice()
+                            .subtract(currentPrice)
+                            .multiply(BigDecimal.valueOf(trade.getAmount()));
+                    trade.setProfitLose(profitLose);
                     trade.setClosePrice(currentPrice);
                     trade.setDateClose(date);
-                    newBudget = newBudget.add(trade.getOpenPrice().subtract(currentPrice));
+                    newBudget = newBudget.add(getFinalPrice(trade).add(profitLose));
                 });
     }
 
     private void findBuyPositionAndClose(@NotNull final List<TradeDTO> tradeList, @NotNull final BigDecimal currentPrice, final LocalDateTime date) {
         tradeList.stream()
-                .filter(trade -> trade.getType() == Trade.TradeType.BUY && trade.getProfitLose() == null)
+                .filter(trade -> trade.getType() == BUY && trade.getProfitLose() == null)
                 .findFirst()
                 .ifPresent(trade -> {
-                    trade.setProfitLose(currentPrice.subtract(trade.getOpenPrice()));
+                    final BigDecimal profitLose = currentPrice
+                            .subtract(trade.getOpenPrice())
+                            .multiply(BigDecimal.valueOf(trade.getAmount()));
+                    trade.setProfitLose(profitLose);
                     trade.setClosePrice(currentPrice);
                     trade.setDateClose(date);
-                    newBudget = newBudget.add(currentPrice.subtract(trade.getOpenPrice()));
+                    newBudget = newBudget.add(getFinalPrice(trade).add(profitLose));
                 });
     }
 
@@ -106,40 +112,54 @@ public class BotRsiService {
                         TradePositionHelper.checkSlAndTpForSellPosition(trade, currentPrice))
                 .findFirst()
                 .ifPresent(trade -> {
-                    trade.setProfitLose(trade.getOpenPrice().subtract(currentPrice));
+                    final BigDecimal profitLose = trade.getOpenPrice()
+                            .subtract(currentPrice)
+                            .multiply(BigDecimal.valueOf(trade.getAmount()));
+                    trade.setProfitLose(profitLose);
                     trade.setClosePrice(currentPrice);
                     trade.setDateClose(date);
-                    newBudget = newBudget.add(trade.getOpenPrice().subtract(currentPrice));
+                    newBudget = newBudget.add(getFinalPrice(trade).add(profitLose));
                     trade.setComment("The position has been closed because of SL or TP");
                 });
     }
 
     private void findBuyPositionSlOrTpToClose(@NotNull final List<TradeDTO> tradeList, @NotNull final BigDecimal currentPrice, final LocalDateTime date) {
         tradeList.stream()
-                .filter(trade -> trade.getType().equals(Trade.TradeType.BUY) && trade.getProfitLose() == null &&
+                .filter(trade -> trade.getType().equals(BUY) && trade.getProfitLose() == null &&
                         TradePositionHelper.checkSlAndTpForBuyPosition(trade, currentPrice))
                 .findFirst()
                 .ifPresent(trade -> {
-                    trade.setProfitLose(currentPrice.subtract(trade.getOpenPrice()));
+                    final BigDecimal profitLose = currentPrice
+                            .subtract(trade.getOpenPrice())
+                            .multiply(BigDecimal.valueOf(trade.getAmount()));
+                    trade.setProfitLose(profitLose);
                     trade.setClosePrice(currentPrice);
                     trade.setDateClose(date);
-                    newBudget = newBudget.add(currentPrice.subtract(trade.getOpenPrice()));
+                    newBudget = newBudget.add(getFinalPrice(trade).add(profitLose));
                     trade.setComment("The position has been closed because of SL or TP");
                 });
     }
 
+    private void addNewTrade(List<TradeDTO> tradeList, @NotNull TradeDTO newTrade) {
+        final BigDecimal finalPrice = newTrade.getOpenPrice().multiply(BigDecimal.valueOf(newTrade.getAmount()));
+        if (newBudget.compareTo(finalPrice) >= 0) {
+            newBudget = newBudget.subtract(getFinalPrice(newTrade));
+            tradeList.add(newTrade);
+        }
+    }
+
+
     private List<TradeDTO> cleanUnrealizedTrades(@NotNull List<TradeDTO> tradeList) {
         tradeList.stream()
                 .filter(trade -> trade.getProfitLose() == null)
-                .forEach(trade -> newBudget = newBudget.add(trade.getOpenPrice()));
+                .map(this::getFinalPrice)
+                .forEach(finalPrice -> newBudget = newBudget.add(finalPrice));
         return tradeList.stream()
                 .filter(trade -> trade.getProfitLose() != null)
                 .collect(Collectors.toList());
     }
 
-    private void addNewTrade(List<TradeDTO> tradeList, @NotNull TradeDTO newTrade) {
-        if (newBudget.compareTo(newTrade.getOpenPrice()) >= 0) {
-            tradeList.add(newTrade);
-        }
+    private BigDecimal getFinalPrice(TradeDTO trade) {
+        return trade.getOpenPrice().multiply(BigDecimal.valueOf(trade.getAmount()));
     }
 }

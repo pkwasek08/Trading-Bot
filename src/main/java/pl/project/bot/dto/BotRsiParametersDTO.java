@@ -17,5 +17,6 @@ public class BotRsiParametersDTO extends StockDataParametersDTO {
     private BigDecimal budget;
     private BigDecimal stopLoss;
     private BigDecimal takeProfit;
+    private Integer amount;
     //private StrategyEnum strategy;
 }
