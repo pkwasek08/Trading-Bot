@@ -15,7 +15,6 @@ public class StockDataParametersDTO {
     private LocalDate endDate;
     private String stock;
     private String resampleFreq;
-    //private StrategyEnum strategy;
 
     public boolean checkIsNull() {
         return startDate == null || endDate == null || Strings.isNullOrEmpty(stock) || Strings.isNullOrEmpty(resampleFreq);

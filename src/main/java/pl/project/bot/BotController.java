@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.project.bot.dto.BotBBandsParametersDTO;
 import pl.project.bot.dto.BotDTO;
 import pl.project.bot.dto.BotRsiParametersDTO;
 import pl.project.bot.dto.StockDataParametersDTO;
-import pl.project.common.helper.TradePositionHelper;
 
 import java.util.List;
 
@@ -43,10 +43,15 @@ public class BotController {
         if (parameters == null || parameters.checkIsNull()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ValidationException - empty parameters");
         }
-        if (TradePositionHelper.checkSlTpParameters(parameters)) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ValidationException - missing stopLoss or takeProfit param");
-        }
         return ResponseEntity.ok(botService.startRsiBot(parameters));
+    }
+
+    @PostMapping(value = "/startBBandsBot")
+    public ResponseEntity<Object> startBBandsBot(@RequestBody BotBBandsParametersDTO parameters) {
+        if (parameters == null || parameters.checkIsNull()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ValidationException - empty parameters");
+        }
+        return ResponseEntity.ok(botService.startBBandsBot(parameters));
     }
 
     @GetMapping(value = "/stockData")

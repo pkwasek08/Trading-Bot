@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 import pl.project.bot.BotsEntity;
-import pl.project.bot.dto.BotRsiParametersDTO;
-import pl.project.bot.dto.BotRsiSimulationResultDto;
+import pl.project.bot.dto.BotParametersDTO;
+import pl.project.bot.dto.BotSimulationResultDto;
 import pl.project.common.enums.StrategyEnum;
 import pl.project.trade.mapper.TradeMapper;
 
@@ -14,18 +14,19 @@ import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @Component
-public class BotRsiMapper {
+public class BotSimulationMapper {
 
-    public BotsEntity rsiSimulationResultToBotEntity(@NotNull BotRsiSimulationResultDto rsiSimulationResult,
-                                                     @NotNull BotRsiParametersDTO parameters,
-                                                     @NotNull LocalDateTime createDate) {
+    public BotsEntity simulationResultToBotEntity(@NotNull BotSimulationResultDto rsiSimulationResult,
+                                                  @NotNull BotParametersDTO parameters,
+                                                  @NotNull LocalDateTime createDate,
+                                                  @NotNull StrategyEnum strategy) {
         final BotsEntity newBot = new BotsEntity();
         newBot.setBudget(rsiSimulationResult.getBudgetBefore());
         newBot.setResultValue(rsiSimulationResult.getBudgetAfter());
         newBot.setCreateDate(createDate);
         newBot.setStartDate(parameters.getStartDate().atStartOfDay());
         newBot.setEndDate(parameters.getEndDate().atStartOfDay());
-        newBot.setStrategy(StrategyEnum.RSI.name());
+        newBot.setStrategy(strategy.name());
         newBot.setName(parameters.getName());
         newBot.setStatus("SUCCESS");
         newBot.setPairStock(parameters.getStock());

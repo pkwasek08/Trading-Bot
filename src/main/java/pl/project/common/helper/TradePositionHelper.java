@@ -20,9 +20,4 @@ public class TradePositionHelper {
         return (trade.getStopLoss() != null && trade.getOpenPrice().subtract(trade.getStopLoss()).compareTo(currentPrice) > 0) ||
                 (trade.getTakeProfit() != null && trade.getOpenPrice().add(trade.getTakeProfit()).compareTo(currentPrice) < 0);
     }
-
-    public static boolean checkSlTpParameters(@NotNull final BotRsiParametersDTO parameters) {
-        return (parameters.getStopLoss() == null && parameters.getTakeProfit() != null) ||
-                (parameters.getStopLoss() != null && parameters.getTakeProfit() == null);
-    }
 }

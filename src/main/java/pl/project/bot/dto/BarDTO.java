@@ -11,4 +11,7 @@ import org.ta4j.core.Bar;
 public class BarDTO {
     private Bar bar;
     private double rsi;
+    private double middleBollinger;
+    private double lowerBollinger;
+    private double upperBollinger;
 }

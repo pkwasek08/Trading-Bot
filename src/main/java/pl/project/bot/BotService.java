@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.project.bot.dto.*;
 import pl.project.bot.mapper.BotMapper;
-import pl.project.bot.mapper.BotRsiMapper;
+import pl.project.bot.mapper.BotSimulationMapper;
+import pl.project.bot.strategy.BotBBandsStrategyService;
+import pl.project.bot.strategy.BotRsiStrategyService;
+import pl.project.common.enums.StrategyEnum;
 import pl.project.common.execDetails.ExecDetails;
 import pl.project.common.execDetails.ExecDetailsHelper;
 
@@ -23,9 +26,11 @@ public class BotService {
     @Autowired
     private BotGetStockDataService botGetStockDataService;
     @Autowired
-    private BotRsiService botRsiService;
+    private BotRsiStrategyService botRsiStrategyService;
     @Autowired
-    private BotRsiMapper botRsiMapper;
+    private BotBBandsStrategyService botBBandsStrategyService;
+    @Autowired
+    private BotSimulationMapper botSimulationMapper;
 
     public List<BotDTO> getAllBotDetails() {
         List<BotsEntity> bots = new ArrayList<>();
@@ -54,8 +59,19 @@ public class BotService {
     public ExecDetailsBot startRsiBot(@NotNull BotRsiParametersDTO parameters) {
         ExecDetailsHelper execHelper = new ExecDetailsHelper();
         execHelper.setStartDbTime(OffsetDateTime.now());
-        final BotRsiSimulationResultDto result = botRsiService.startSimulation(parameters);
-        botRepository.save(botRsiMapper.rsiSimulationResultToBotEntity(result, parameters, execHelper.getStartExecTime().toLocalDateTime()));
+        final BotSimulationResultDto result = botRsiStrategyService.startSimulation(parameters);
+        botRepository.save(botSimulationMapper
+                .simulationResultToBotEntity(result, parameters, execHelper.getStartExecTime().toLocalDateTime(), StrategyEnum.RSI));
+        execHelper.addNewDbTime();
+        return new ExecDetailsBot(new ExecDetails(execHelper.getExecTime(), execHelper.getDbTime()), result);
+    }
+
+    public ExecDetailsBot startBBandsBot(@NotNull BotBBandsParametersDTO parameters) {
+        ExecDetailsHelper execHelper = new ExecDetailsHelper();
+        execHelper.setStartDbTime(OffsetDateTime.now());
+        final BotSimulationResultDto result = botBBandsStrategyService.startSimulation(parameters);
+        botRepository.save(botSimulationMapper
+                .simulationResultToBotEntity(result, parameters, execHelper.getStartExecTime().toLocalDateTime(), StrategyEnum.BBANDS));
         execHelper.addNewDbTime();
         return new ExecDetailsBot(new ExecDetails(execHelper.getExecTime(), execHelper.getDbTime()), result);
     }

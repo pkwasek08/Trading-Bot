@@ -10,7 +10,12 @@ import org.ta4j.core.BarSeries;
 import org.ta4j.core.BaseBar;
 import org.ta4j.core.BaseBarSeries;
 import org.ta4j.core.indicators.RSIIndicator;
+import org.ta4j.core.indicators.bollinger.BollingerBandsLowerIndicator;
+import org.ta4j.core.indicators.bollinger.BollingerBandsMiddleIndicator;
+import org.ta4j.core.indicators.bollinger.BollingerBandsUpperIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
+import org.ta4j.core.indicators.statistics.StandardDeviationIndicator;
+import org.ta4j.core.num.DecimalNum;
 import org.ta4j.core.num.Num;
 import pl.project.bot.dto.BarDTO;
 import pl.project.bot.dto.StockDataParametersDTO;
@@ -32,6 +37,8 @@ public class BotGetStockDataService {
 
     @Value("${stock.exchange.api.token}")
     private String stockExchangeToken;
+    int period = 14;
+    Num k = DecimalNum.valueOf(2.0);  // Constant for belt widths
 
     public StockDataResultDto getStockData(@NotNull StockDataParametersDTO parameters) {
         StockDataResultDto result = new StockDataResultDto();
@@ -60,36 +67,28 @@ public class BotGetStockDataService {
             result.setResponse(jsonArray.toString());
             BarSeries barSeries = getBarSeries(jsonArray, 0, jsonArray.length(), null);
             List<BarDTO> barDataList = new ArrayList<>();
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                String dateTime = jsonObject.getString("date");
-                Double price = jsonObject.getDouble("close");
-                double rsi = 0;
-                // RSI is calculated based on 14 previous bars
-                if (i > 13) {
-                    rsi = calculateRSI(jsonArray, i - 14, i);
-                    BarDTO singleBarData = new BarDTO();
-                    singleBarData.setBar(barSeries.getBar(i));
-                    singleBarData.setRsi(rsi);
-                    barDataList.add(singleBarData);
-                }
-                // assign new bar with calculated rsi
-                System.out.println("Date/Time: " + dateTime + ", Price: " + price + ", RSI: " + rsi);
+
+            // RSI and BBANDS is calculated based on 14 previous bars
+            for (int i = 14; i < jsonArray.length(); i++) {
+                final BarSeries series = getBarSeries(jsonArray, i - 14, i, period);
+                ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
+                final BarDTO singleBarData = new BarDTO();
+                singleBarData.setBar(barSeries.getBar(i));
+                final double rsi = calculateRSI(series, closePrice);
+                singleBarData.setRsi(rsi);
+                final double middleBollinger = calculateMiddleBollinger(series, closePrice);
+                singleBarData.setMiddleBollinger(middleBollinger);
+                final double lowerBollinger = calculateLowerBollinger(series, closePrice);
+                singleBarData.setLowerBollinger(lowerBollinger);
+                final double upperBollinger = calculateUpperBollinger(series, closePrice);
+                singleBarData.setUpperBollinger(upperBollinger);
+                barDataList.add(singleBarData);
             }
             result.setBarDataList(barDataList);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return result;
-    }
-
-    private double calculateRSI(JSONArray array, int indexStart, int indexEnd) throws JSONException {
-        int period = indexEnd - indexStart;
-        BarSeries series = getBarSeries(array, indexStart, indexEnd, period);
-        ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
-        RSIIndicator rsi = new RSIIndicator(closePrice, period);
-        Num rsiValue = rsi.getValue(series.getEndIndex());
-        return rsiValue.doubleValue();
     }
 
     private BarSeries getBarSeries(JSONArray array, int indexStart, int indexEnd, Integer period) throws JSONException {
@@ -108,5 +107,34 @@ public class BotGetStockDataService {
             series.addBar(bar);
         }
         return series;
+    }
+
+    private double calculateRSI(BarSeries series, ClosePriceIndicator closePrice) {
+        RSIIndicator rsi = new RSIIndicator(closePrice, period);
+        Num rsiValue = rsi.getValue(series.getEndIndex());
+        return rsiValue.doubleValue();
+    }
+
+    private double calculateMiddleBollinger(BarSeries series, ClosePriceIndicator closePrice) {
+        BollingerBandsMiddleIndicator middleBB = new BollingerBandsMiddleIndicator(closePrice);
+        Num middleBBValue = middleBB.getValue(series.getEndIndex());
+        return middleBBValue.doubleValue();
+    }
+
+
+    public double calculateUpperBollinger(BarSeries series, ClosePriceIndicator closePrice) {
+        StandardDeviationIndicator sd = new StandardDeviationIndicator(closePrice, period);
+        BollingerBandsMiddleIndicator middleBB = new BollingerBandsMiddleIndicator(closePrice);
+        BollingerBandsUpperIndicator upperBB = new BollingerBandsUpperIndicator(middleBB, sd, k);
+        Num upperBBValue = upperBB.getValue(series.getEndIndex());
+        return upperBBValue.doubleValue();
+    }
+
+    public double calculateLowerBollinger(BarSeries series, ClosePriceIndicator closePrice) {
+        StandardDeviationIndicator sd = new StandardDeviationIndicator(closePrice, period);
+        BollingerBandsMiddleIndicator middleBB = new BollingerBandsMiddleIndicator(closePrice);
+        BollingerBandsLowerIndicator lowerBB = new BollingerBandsLowerIndicator(middleBB, sd, k);
+        Num lowerBBValue = lowerBB.getValue(series.getEndIndex());
+        return lowerBBValue.doubleValue();
     }
 }

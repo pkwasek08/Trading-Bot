@@ -7,12 +7,11 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-
 @EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BotRsiParametersDTO extends BotParametersDTO {
-    private BigDecimal rsiHeightLevel;
-    private BigDecimal rsiLowLevel;
+public class BotBBandsParametersDTO extends BotParametersDTO {
+    private BigDecimal bbandsHeightLevel;
+    private BigDecimal bbandsLowLevel;
 }
