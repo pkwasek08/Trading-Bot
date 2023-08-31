@@ -23,6 +23,8 @@ public class BotsEntity {
     private LocalDateTime createDate;
     private String pairStock;
     private String resampleFreq;
+    private BigDecimal roi;
+    private BigDecimal wlRatio;
     private Collection<TradesEntity> tradesById;
 
     @Id
@@ -147,6 +149,26 @@ public class BotsEntity {
         this.resampleFreq = resampleFreq;
     }
 
+    @Basic
+    @Column(name = "roi", precision = 2)
+    public BigDecimal getRoi() {
+        return roi;
+    }
+
+    public void setRoi(BigDecimal ROI) {
+        this.roi = ROI;
+    }
+
+    @Basic
+    @Column(name = "wlratio", precision = 2)
+    public BigDecimal getWlRatio() {
+        return wlRatio;
+    }
+
+    public void setWlRatio(BigDecimal WLRatio) {
+        this.wlRatio = WLRatio;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -166,6 +188,8 @@ public class BotsEntity {
         if (!Objects.equals(createDate, that.createDate)) return false;
         if (!Objects.equals(pairStock, that.pairStock)) return false;
         if (!Objects.equals(resampleFreq, that.resampleFreq)) return false;
+        if (!Objects.equals(roi, that.roi)) return false;
+        if (!Objects.equals(wlRatio, that.wlRatio)) return false;
         return Objects.equals(tradesById, that.tradesById);
     }
 
@@ -184,6 +208,8 @@ public class BotsEntity {
         result = 31 * result + (pairStock != null ? pairStock.hashCode() : 0);
         result = 31 * result + (resampleFreq != null ? resampleFreq.hashCode() : 0);
         result = 31 * result + (tradesById != null ? tradesById.hashCode() : 0);
+        result = 31 * result + (roi != null ? roi.hashCode() : 0);
+        result = 31 * result + (wlRatio != null ? wlRatio.hashCode() : 0);
         return result;
     }
 

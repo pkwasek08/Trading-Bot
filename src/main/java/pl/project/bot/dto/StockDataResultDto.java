@@ -11,6 +11,5 @@ import java.util.List;
 @NoArgsConstructor
 public class StockDataResultDto {
     private StockDataParametersDTO parameters;
-    private String response;
     private List<BarDTO> barDataList;
 }

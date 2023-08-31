@@ -15,10 +15,12 @@ import java.util.List;
 public class BotSimulationResultDto extends StockDataResultDto {
     private BigDecimal budgetBefore;
     private BigDecimal budgetAfter;
+    private BigDecimal roi;
+    private BigDecimal wlRatio;
     private List<TradeDTO> tradeList = new ArrayList<>();
 
     public BotSimulationResultDto(StockDataResultDto stockDataResult, BigDecimal budgetBefore) {
-        super(stockDataResult.getParameters(), stockDataResult.getResponse(), stockDataResult.getBarDataList());
+        super(stockDataResult.getParameters(), stockDataResult.getBarDataList());
         this.budgetBefore = budgetBefore;
     }
 }

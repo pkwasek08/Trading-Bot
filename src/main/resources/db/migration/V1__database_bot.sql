@@ -12,6 +12,8 @@ CREATE TABLE "bots"
     "parameters"         varchar,
     "pair_stock"         varchar,
     "resample_frequency" varchar,
+    "roi"                numeric(4, 2),
+    "wlratio"            numeric(4, 2),
     "create_date"        timestamp
 );
 

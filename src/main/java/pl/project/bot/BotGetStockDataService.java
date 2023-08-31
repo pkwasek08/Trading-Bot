@@ -64,7 +64,6 @@ public class BotGetStockDataService {
             con.disconnect();
 
             JSONArray jsonArray = new JSONArray(content.toString());
-            result.setResponse(jsonArray.toString());
             BarSeries barSeries = getBarSeries(jsonArray, 0, jsonArray.length(), null);
             List<BarDTO> barDataList = new ArrayList<>();
 

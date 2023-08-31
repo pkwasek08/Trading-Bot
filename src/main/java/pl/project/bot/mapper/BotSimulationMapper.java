@@ -31,6 +31,8 @@ public class BotSimulationMapper {
         newBot.setStatus("SUCCESS");
         newBot.setPairStock(parameters.getStock());
         newBot.setResampleFreq(parameters.getResampleFreq());
+        newBot.setRoi(rsiSimulationResult.getRoi());
+        newBot.setWlRatio(rsiSimulationResult.getWlRatio());
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             newBot.setParameters(objectMapper.writeValueAsString(parameters));

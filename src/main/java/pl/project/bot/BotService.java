@@ -8,6 +8,7 @@ import pl.project.bot.mapper.BotMapper;
 import pl.project.bot.mapper.BotSimulationMapper;
 import pl.project.bot.strategy.BotBBandsStrategyService;
 import pl.project.bot.strategy.BotRsiStrategyService;
+import pl.project.bot.strategy.RatioService;
 import pl.project.common.enums.StrategyEnum;
 import pl.project.common.execDetails.ExecDetails;
 import pl.project.common.execDetails.ExecDetailsHelper;
@@ -31,6 +32,8 @@ public class BotService {
     private BotBBandsStrategyService botBBandsStrategyService;
     @Autowired
     private BotSimulationMapper botSimulationMapper;
+    @Autowired
+    private RatioService ratioService;
 
     public List<BotDTO> getAllBotDetails() {
         List<BotsEntity> bots = new ArrayList<>();
@@ -60,6 +63,7 @@ public class BotService {
         ExecDetailsHelper execHelper = new ExecDetailsHelper();
         execHelper.setStartDbTime(OffsetDateTime.now());
         final BotSimulationResultDto result = botRsiStrategyService.startSimulation(parameters);
+        ratioService.calculateStrategyRatios(result);
         botRepository.save(botSimulationMapper
                 .simulationResultToBotEntity(result, parameters, execHelper.getStartExecTime().toLocalDateTime(), StrategyEnum.RSI));
         execHelper.addNewDbTime();
@@ -70,6 +74,7 @@ public class BotService {
         ExecDetailsHelper execHelper = new ExecDetailsHelper();
         execHelper.setStartDbTime(OffsetDateTime.now());
         final BotSimulationResultDto result = botBBandsStrategyService.startSimulation(parameters);
+        ratioService.calculateStrategyRatios(result);
         botRepository.save(botSimulationMapper
                 .simulationResultToBotEntity(result, parameters, execHelper.getStartExecTime().toLocalDateTime(), StrategyEnum.BBANDS));
         execHelper.addNewDbTime();
