@@ -13,13 +13,13 @@ services:
       - 5432:5432
 
   trading-bot-app:
-    image: pkwasek/trading-bot-app:1.0
+    image: pkwasek/trading-bot-app:1.1
     container_name: trading-bot-app
     ports:
       - 4200:80
 
   trading-bot:
-    image: pkwasek/trading-bot:1.0
+    image: pkwasek/trading-bot:1.1
     container_name: trading-bot
     depends_on:
       - dbpostgresql

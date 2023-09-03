@@ -39,6 +39,7 @@ CREATE TABLE "trades"
     "profit_lose" numeric(16, 2),
     "stop_loss"   numeric(16, 2),
     "take_profit" numeric(16, 2),
+    "amount"      numeric,
     "comment"     varchar
 );
 

@@ -20,6 +20,7 @@ public class TradesEntity {
     private BigDecimal stopLoss;
     private BigDecimal takeProfit;
     private String comment;
+    private Long amount;
     private BotsEntity bot;
 
     @Id
@@ -123,6 +124,16 @@ public class TradesEntity {
         this.comment = comment;
     }
 
+    @Basic
+    @Column(name = "amount")
+            public Long getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Long amount) {
+        this.amount = amount;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -139,6 +150,7 @@ public class TradesEntity {
         if (!Objects.equals(profitLose, that.profitLose)) return false;
         if (!Objects.equals(stopLoss, that.stopLoss)) return false;
         if (!Objects.equals(takeProfit, that.takeProfit)) return false;
+        if (!Objects.equals(amount, that.amount)) return false;
         if (!Objects.equals(comment, that.comment)) return false;
         return Objects.equals(bot, that.bot);
     }
@@ -154,6 +166,7 @@ public class TradesEntity {
         result = 31 * result + (profitLose != null ? profitLose.hashCode() : 0);
         result = 31 * result + (stopLoss != null ? stopLoss.hashCode() : 0);
         result = 31 * result + (takeProfit != null ? takeProfit.hashCode() : 0);
+        result = 31 * result + (amount != null ? amount.hashCode() : 0);
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
         result = 31 * result + (bot != null ? bot.hashCode() : 0);
         return result;
