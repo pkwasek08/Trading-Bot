@@ -23,5 +23,7 @@ public class BotDTO {
     private LocalDateTime createDate;
     private String pairStock;
     private String resampleFreq;
+    private BigDecimal roi;
+    private BigDecimal wlRatio;
     private List<TradeDTO> tradeList;
 }

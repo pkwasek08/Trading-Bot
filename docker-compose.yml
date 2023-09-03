@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   dbpostgresql:
-    image: postgres:11-alpine
+    image: postgres:14-alpine
     container_name: dbpostgresql
     volumes:
       - db-java-data:/var/lib/postgresql/data
@@ -12,5 +12,18 @@ services:
     ports:
       - 5432:5432
 
+  trading-bot-app:
+    image: pkwasek/trading-bot-app:1.0
+    container_name: trading-bot-app
+    ports:
+      - 4200:80
+
+  trading-bot:
+    image: pkwasek/trading-bot:1.0
+    container_name: trading-bot
+    depends_on:
+      - dbpostgresql
+    ports:
+      - 8080:8080
 volumes:
   db-java-data:

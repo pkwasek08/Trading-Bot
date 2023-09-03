@@ -22,12 +22,17 @@ public class RatioService {
     }
 
     private BigDecimal calculateWLRatio(final BotSimulationResultDto simulationResult) {
+        int tradeSize = simulationResult.getTradeList().size();
+        if (tradeSize == 0) {
+            return BigDecimal.ZERO;
+
+        }
         long winTrades = simulationResult.getTradeList().stream()
                 .filter(trade -> trade.getProfitLose().compareTo(BigDecimal.ZERO) >= 0)
                 .count();
-        long loseTrade = simulationResult.getTradeList().stream()
-                .filter(trade -> trade.getProfitLose().compareTo(BigDecimal.ZERO) < 0)
-                .count();
-        return BigDecimal.valueOf(winTrades / loseTrade).setScale(2, RoundingMode.HALF_UP);
+
+        return BigDecimal.valueOf((double) winTrades / tradeSize)
+                .multiply(BigDecimal.valueOf(100))
+                .setScale(2, RoundingMode.HALF_UP);
     }
 }
