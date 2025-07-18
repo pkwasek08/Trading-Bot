@@ -1,1 +1,2 @@
 # Trading-Bot
+The project involves the development of an application for automated trading decision-making in the stock market. The application uses statistical indicators to open long or short positions on selected financial instruments. By leveraging historical market data, it enables the simulation of trading strategies and the optimization of input parameters to maximize profitability for specific assets.
