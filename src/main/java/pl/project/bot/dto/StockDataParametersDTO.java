@@ -1,9 +1,9 @@
 package pl.project.bot.dto;
 
-import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 
 import java.time.LocalDate;
 
@@ -17,6 +17,6 @@ public class StockDataParametersDTO {
     private String resampleFreq;
 
     public boolean checkIsNull() {
-        return startDate == null || endDate == null || Strings.isNullOrEmpty(stock) || Strings.isNullOrEmpty(resampleFreq);
+        return startDate == null || endDate == null || Strings.isNotBlank(stock) || Strings.isNotBlank(resampleFreq);
     }
 }

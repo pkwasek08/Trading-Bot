@@ -21,7 +21,7 @@ import pl.project.bot.dto.BarDTO;
 import pl.project.bot.dto.StockDataParametersDTO;
 import pl.project.bot.dto.StockDataResultDto;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;

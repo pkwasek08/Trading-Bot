@@ -8,7 +8,7 @@ import pl.project.bot.BotsEntity;
 import pl.project.trade.dto.TradeDTO;
 import pl.project.trade.TradesEntity;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @Mapper
 public interface TradeMapper {

@@ -1,6 +1,6 @@
 package pl.project.user;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "users", schema = "public", catalog = "bot")

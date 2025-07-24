@@ -9,7 +9,7 @@ import pl.project.bot.dto.BotBBandsParametersDTO;
 import pl.project.bot.dto.BotSimulationResultDto;
 import pl.project.trade.dto.TradeDTO;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

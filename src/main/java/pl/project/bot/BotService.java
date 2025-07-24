@@ -13,7 +13,7 @@ import pl.project.common.enums.StrategyEnum;
 import pl.project.common.execDetails.ExecDetails;
 import pl.project.common.execDetails.ExecDetailsHelper;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;

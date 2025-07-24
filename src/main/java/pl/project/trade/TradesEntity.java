@@ -2,7 +2,7 @@ package pl.project.trade;
 
 import pl.project.bot.BotsEntity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;

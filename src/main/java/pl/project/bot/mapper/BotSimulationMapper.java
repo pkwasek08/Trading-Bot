@@ -2,6 +2,7 @@ package pl.project.bot.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 import pl.project.bot.BotsEntity;
 import pl.project.bot.dto.BotParametersDTO;
@@ -9,7 +10,6 @@ import pl.project.bot.dto.BotSimulationResultDto;
 import pl.project.common.enums.StrategyEnum;
 import pl.project.trade.mapper.TradeMapper;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 

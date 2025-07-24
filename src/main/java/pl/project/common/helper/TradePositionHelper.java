@@ -3,7 +3,7 @@ package pl.project.common.helper;
 import pl.project.bot.dto.BotRsiParametersDTO;
 import pl.project.trade.dto.TradeDTO;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 /**
